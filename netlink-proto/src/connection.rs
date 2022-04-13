@@ -268,7 +268,7 @@ where
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
-        trace!("polling Connection");
+        trace!("polling Connection:+");
         println!("polling Connection backtrace: {}", std::backtrace::Backtrace::force_capture());
 
         let pinned = self.get_mut();
@@ -290,12 +290,15 @@ where
 
         //trace!("done polling Connection WINK");
 
-        if pinned.should_shut_down() {
+        let result = if pinned.should_shut_down() {
             trace!("done polling Connection WINK");
             Poll::Ready(())
         } else {
             trace!("pending polling Connection WINK");
             Poll::Pending
-        }
+        };
+
+        trace!("polling Connection:- result.is_ready(): {}", result.is_ready());
+        result
     }
 }
