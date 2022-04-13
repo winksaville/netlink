@@ -286,11 +286,13 @@ where
         debug!("sending messages");
         pinned.poll_send_messages(cx);
 
-        trace!("done polling Connection");
+        //trace!("done polling Connection WINK");
 
         if pinned.should_shut_down() {
+            trace!("done polling Connection WINK");
             Poll::Ready(())
         } else {
+            trace!("pending polling Connection WINK");
             Poll::Pending
         }
     }
