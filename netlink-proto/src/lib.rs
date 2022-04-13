@@ -163,6 +163,9 @@
 //!     Ok(())
 //! }
 //! ```
+
+#![feature(backtrace)]
+
 #[macro_use]
 extern crate futures;
 #[macro_use]
