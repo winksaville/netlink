@@ -184,6 +184,7 @@ pub use crate::connection::*;
 
 mod errors;
 pub use crate::errors::*;
+pub use io::ErrorKind;
 
 mod handle;
 pub use crate::handle::*;
