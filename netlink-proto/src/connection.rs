@@ -269,7 +269,7 @@ where
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
         trace!("polling Connection:+");
-        //println!("polling Connection backtrace: {}", std::backtrace::Backtrace::force_capture());
+        trace!("polling Connection backtrace: {}", std::backtrace::Backtrace::force_capture());
 
         let pinned = self.get_mut();
 
