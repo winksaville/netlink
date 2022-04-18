@@ -109,7 +109,7 @@ impl AsyncSocket for SmolSocket {
     {
         self.poll_read_with(cx, |this| {
             let x = this.0.get_mut().recv_from(buf, 0);
-            trace!("poll_recv_from: {:?}", x);
+            debug!("poll_recv_from: {:?}", x);
             x.map(|(_len, addr)| addr)
         })
     }

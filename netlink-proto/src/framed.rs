@@ -95,13 +95,13 @@ where
         self: Pin<&mut Self>,
         item: (NetlinkMessage<T>, SocketAddr),
     ) -> Result<(), Self::Error> {
-        trace!("sending frame");
+        debug!("sending frame");
         let (frame, out_addr) = item;
         let pin = self.get_mut();
         C::encode(frame, &mut pin.writer)?;
         pin.out_addr = out_addr;
         pin.flushed = false;
-        trace!("frame encoded; length={}", pin.writer.len());
+        debug!("frame encoded; length={}", pin.writer.len());
         Ok(())
     }
 
@@ -110,7 +110,7 @@ where
             return Poll::Ready(Ok(()));
         }
 
-        trace!("flushing frame; length={}", self.writer.len());
+        debug!("flushing frame; length={}", self.writer.len());
         let Self {
             ref mut socket,
             ref mut out_addr,
@@ -119,7 +119,7 @@ where
         } = *self;
 
         let n = ready!(socket.poll_send_to(cx, writer, out_addr))?;
-        trace!("written {}", n);
+        debug!("written {}", n);
 
         let wrote_all = n == self.writer.len();
         self.writer.clear();

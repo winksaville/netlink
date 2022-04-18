@@ -38,7 +38,7 @@ impl NetlinkMessageCodec for NetlinkAuditCodec {
         loop {
             // If there's nothing to read, return Ok(None)
             if src.as_ref().is_empty() {
-                trace!("buffer is empty");
+                debug!("buffer is empty");
                 src.clear();
                 return Ok(None);
             }
@@ -117,7 +117,7 @@ impl NetlinkMessageCodec for NetlinkAuditCodec {
             let parsed = NetlinkMessage::<T>::deserialize(&bytes);
             match parsed {
                 Ok(packet) => {
-                    trace!("<<< {:?}", packet);
+                    debug!("<<< {:?}", packet);
                     return Ok(Some(packet));
                 }
                 Err(e) => {

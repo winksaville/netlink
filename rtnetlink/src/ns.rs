@@ -61,7 +61,7 @@ impl NetworkNamespace {
     pub async fn add(ns_name: String) -> Result<(), Error> {
         // Forking process to avoid moving caller into new namespace
         NetworkNamespace::prep_for_fork()?;
-        log::trace!("Forking...");
+        log::debug!("Forking...");
         match unsafe { fork() } {
             Ok(ForkResult::Parent { child, .. }) => NetworkNamespace::parent_process(child),
             Ok(ForkResult::Child) => {
@@ -109,12 +109,12 @@ impl NetworkNamespace {
     /// This is the parent process form the fork, it waits for the
     /// child to exit properly
     pub fn parent_process(child: nix::unistd::Pid) -> Result<(), Error> {
-        log::trace!("parent_process child PID: {}", child);
-        log::trace!("Waiting for child to finish...");
+        log::debug!("parent_process child PID: {}", child);
+        log::debug!("Waiting for child to finish...");
         match waitpid(child, None) {
             Ok(wait_status) => match wait_status {
                 WaitStatus::Exited(_, res) => {
-                    log::trace!("Child exited with: {}", res);
+                    log::debug!("Child exited with: {}", res);
                     if res == 0 {
                         return Ok(());
                     }
@@ -148,7 +148,7 @@ impl NetworkNamespace {
     /// resources. It creates the folder and namespace file.
     /// Returns the namespace file path
     pub fn child_process(ns_name: String) -> Result<String, Error> {
-        log::trace!("child_process will create the namespace");
+        log::debug!("child_process will create the namespace");
 
         let mut netns_path = String::new();
 
