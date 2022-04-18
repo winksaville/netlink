@@ -56,7 +56,7 @@ impl NetlinkMessageCodec for NetlinkCodec {
         loop {
             // If there's nothing to read, return Ok(None)
             if src.as_ref().is_empty() {
-                trace!("buffer is empty");
+                debug!("buffer is empty");
                 src.clear();
                 return Ok(None);
             }
@@ -90,7 +90,7 @@ impl NetlinkMessageCodec for NetlinkCodec {
             let parsed = NetlinkMessage::<T>::deserialize(&bytes);
             match parsed {
                 Ok(packet) => {
-                    trace!("<<< {:?}", packet);
+                    debug!("<<< {:?}", packet);
                     return Ok(Some(packet));
                 }
                 Err(e) => {
@@ -124,7 +124,7 @@ impl NetlinkMessageCodec for NetlinkCodec {
         let new_len = old_len + msg_len;
         buf.resize(new_len, 0);
         msg.serialize(&mut buf[old_len..][..msg_len]);
-        trace!(">>> {:?}", msg);
+        debug!(">>> {:?}", msg);
         Ok(())
     }
 }

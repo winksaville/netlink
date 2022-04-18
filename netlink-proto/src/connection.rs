@@ -83,7 +83,7 @@ where
     }
 
     pub fn poll_send_messages(&mut self, cx: &mut Context) {
-        trace!("poll_send_messages called");
+        debug!("poll_send_messages called");
         let Connection {
             ref mut socket,
             ref mut protocol,
@@ -92,7 +92,7 @@ where
         let mut socket = Pin::new(socket);
 
         while !protocol.outgoing_messages.is_empty() {
-            trace!("found outgoing message to send checking if socket is ready");
+            debug!("found outgoing message to send checking if socket is ready");
             if let Poll::Ready(Err(e)) = Pin::as_mut(&mut socket).poll_ready(cx) {
                 // Sink errors are usually not recoverable. The socket
                 // probably shut down.
@@ -104,7 +104,7 @@ where
             let (mut message, addr) = protocol.outgoing_messages.pop_front().unwrap();
             message.finalize();
 
-            trace!("sending outgoing message");
+            debug!("sending outgoing message");
             if let Err(e) = Pin::as_mut(&mut socket).start_send((message, addr)) {
                 error!("failed to send message: {:?}", e);
                 self.socket_closed = true;
@@ -112,12 +112,12 @@ where
             }
         }
 
-        trace!("poll_send_messages done");
+        debug!("poll_send_messages done");
         self.poll_flush(cx)
     }
 
     pub fn poll_flush(&mut self, cx: &mut Context) {
-        trace!("poll_flush called");
+        debug!("poll_flush called");
         if let Poll::Ready(Err(e)) = Pin::new(&mut self.socket).poll_flush(cx) {
             warn!("error flushing netlink socket: {:?}", e);
             self.socket_closed = true;
@@ -125,14 +125,14 @@ where
     }
 
     pub fn poll_read_messages(&mut self, cx: &mut Context) {
-        trace!("poll_read_messages called");
+        debug!("poll_read_messages called");
         let mut socket = Pin::new(&mut self.socket);
 
         loop {
-            trace!("polling socket");
+            debug!("polling socket");
             match socket.as_mut().poll_next(cx) {
                 Poll::Ready(Some((message, addr))) => {
-                    trace!("read datagram from socket");
+                    debug!("read datagram from socket");
                     self.protocol.handle_message(message, addr);
                 }
                 Poll::Ready(None) => {
@@ -141,7 +141,7 @@ where
                     return;
                 }
                 Poll::Pending => {
-                    trace!("no datagram read from socket");
+                    debug!("no datagram read from socket");
                     return;
                 }
             }
@@ -149,7 +149,7 @@ where
     }
 
     pub fn poll_requests(&mut self, cx: &mut Context) {
-        trace!("poll_requests called");
+        debug!("poll_requests called");
         if let Some(mut stream) = self.requests_rx.as_mut() {
             loop {
                 match Pin::new(&mut stream).poll_next(cx) {
@@ -159,7 +159,7 @@ where
                 }
             }
             let _ = self.requests_rx.take();
-            trace!("no new requests to handle poll_requests done");
+            debug!("no new requests to handle poll_requests done");
         }
     }
 
@@ -174,7 +174,7 @@ where
             return;
         }
 
-        trace!("forward_unsolicited_messages called");
+        debug!("forward_unsolicited_messages called");
         let mut ready = false;
 
         let Connection {
@@ -206,11 +206,11 @@ where
             self.forward_unsolicited_messages();
         }
 
-        trace!("forward_unsolicited_messages done");
+        debug!("forward_unsolicited_messages done");
     }
 
     pub fn forward_responses(&mut self) {
-        trace!("forward_responses called");
+        debug!("forward_responses called");
         let protocol = &mut self.protocol;
 
         while let Some(response) = protocol.incoming_responses.pop_front() {
@@ -231,7 +231,7 @@ where
                     // hence closing the channel and signaling the
                     // handle that no more messages are expected.
                     Noop | Done | Ack(_) => {
-                        trace!("not forwarding Noop/Ack/Done message to the handle");
+                        debug!("not forwarding Noop/Ack/Done message to the handle");
                         continue;
                     }
                     // I'm not sure how we should handle overrun messages
@@ -244,14 +244,14 @@ where
                 }
             }
 
-            trace!("forwarding response to the handle");
+            debug!("forwarding response to the handle");
             if tx.unbounded_send(message).is_err() {
                 // With an unboundedsender, an error can
                 // only happen if the receiver is closed.
                 warn!("failed to forward response back to the handle");
             }
         }
-        trace!("forward_responses done");
+        debug!("forward_responses done");
     }
 
     pub fn should_shut_down(&self) -> bool {
@@ -269,7 +269,7 @@ where
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
         debug!("polling Connection:+ tid={}", std::thread::current().id().as_u64());
-        trace!("polling Connection backtrace:\n{}", std::backtrace::Backtrace::force_capture());
+        debug!("polling Connection backtrace:\n{}", std::backtrace::Backtrace::force_capture());
 
         let pinned = self.get_mut();
 

@@ -111,13 +111,13 @@ where
         };
 
         let metadata = if done {
-            trace!("request {:?} fully processed", request_id);
+            debug!("request {:?} fully processed", request_id);
             let (k, v) = entry.remove_entry();
             entry_key = k;
             request_id = &entry_key;
             v.metadata
         } else {
-            trace!("more responses to request {:?} may come", request_id);
+            debug!("more responses to request {:?} may come", request_id);
             entry.get().metadata.clone()
         };
 
