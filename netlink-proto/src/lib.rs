@@ -165,6 +165,7 @@
 //! ```
 
 #![feature(backtrace)]
+#![feature(thread_id_value)]
 
 #[macro_use]
 extern crate futures;
