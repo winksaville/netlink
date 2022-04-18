@@ -273,26 +273,26 @@ where
 
         let pinned = self.get_mut();
 
-        debug!("reading incoming messages");
+        //debug!("reading incoming messages");
         pinned.poll_read_messages(cx);
 
-        debug!("forwarding unsolicited messages to the connection handle");
+        //debug!("forwarding unsolicited messages to the connection handle");
         pinned.forward_unsolicited_messages();
 
-        debug!("forwaring responses to previous requests to the connection handle");
+        //debug!("forwaring responses to previous requests to the connection handle");
         pinned.forward_responses();
 
-        debug!("handling requests");
+        //debug!("handling requests");
         pinned.poll_requests(cx);
 
-        debug!("sending messages");
+        //debug!("sending messages");
         pinned.poll_send_messages(cx);
 
         let result = if pinned.should_shut_down() {
-            debug!("done polling Connection");
+            //debug!("done polling Connection");
             Poll::Ready(())
         } else {
-            debug!("pending polling Connection");
+            //debug!("pending polling Connection");
             Poll::Pending
         };
 
