@@ -268,7 +268,7 @@ where
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
-        trace!("polling Connection:+ tid={}", std::thread::current().id().as_u64());
+        debug!("polling Connection:+ tid={}", std::thread::current().id().as_u64());
         trace!("polling Connection backtrace:\n{}", std::backtrace::Backtrace::force_capture());
 
         let pinned = self.get_mut();
@@ -288,17 +288,15 @@ where
         debug!("sending messages");
         pinned.poll_send_messages(cx);
 
-        //trace!("done polling Connection WINK");
-
         let result = if pinned.should_shut_down() {
-            trace!("done polling Connection WINK");
+            debug!("done polling Connection");
             Poll::Ready(())
         } else {
-            trace!("pending polling Connection WINK");
+            debug!("pending polling Connection");
             Poll::Pending
         };
 
-        trace!("polling Connection:- result.is_ready(): {}", result.is_ready());
+        debug!("polling Connection:- result.is_ready(): {}", result.is_ready());
         result
     }
 }
