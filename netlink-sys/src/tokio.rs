@@ -7,7 +7,6 @@ use std::{
 };
 
 use futures::ready;
-use log::trace;
 use tokio::io::unix::AsyncFd;
 
 use crate::{AsyncSocket, Socket, SocketAddr};
@@ -104,17 +103,17 @@ impl AsyncSocket for TokioSocket {
         B: bytes::BufMut,
     {
         loop {
-            debug!("poll_recv_from called");
+            log::debug!("poll_recv_from called");
             let mut guard = ready!(self.0.poll_read_ready(cx))?;
-            debug!("poll_recv_from socket is ready for reading");
+            log::debug!("poll_recv_from socket is ready for reading");
 
             match guard.try_io(|inner| inner.get_ref().recv_from(buf, 0)) {
                 Ok(x) => {
-                    debug!("poll_recv_from {:?} bytes read", x);
+                    log::debug!("poll_recv_from {:?} bytes read", x);
                     return Poll::Ready(x.map(|(_len, addr)| addr));
                 }
                 Err(_would_block) => {
-                    debug!("poll_recv_from socket would block");
+                    log::debug!("poll_recv_from socket would block");
                     continue;
                 }
             }
@@ -126,17 +125,17 @@ impl AsyncSocket for TokioSocket {
         cx: &mut Context<'_>,
     ) -> Poll<io::Result<(Vec<u8>, SocketAddr)>> {
         loop {
-            debug!("poll_recv_from_full called");
+            log::debug!("poll_recv_from_full called");
             let mut guard = ready!(self.0.poll_read_ready(cx))?;
-            debug!("poll_recv_from_full socket is ready for reading");
+            log::debug!("poll_recv_from_full socket is ready for reading");
 
             match guard.try_io(|inner| inner.get_ref().recv_from_full()) {
                 Ok(x) => {
-                    debug!("poll_recv_from_full {:?} bytes read", x);
+                    log::debug!("poll_recv_from_full {:?} bytes read", x);
                     return Poll::Ready(x);
                 }
                 Err(_would_block) => {
-                    debug!("poll_recv_from_full socket would block");
+                    log::debug!("poll_recv_from_full socket would block");
                     continue;
                 }
             }
