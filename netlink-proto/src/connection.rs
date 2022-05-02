@@ -268,7 +268,7 @@ where
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
-        debug!("polling Connection:+ tid={}", std::thread::current().id().as_u64());
+        debug!("polling Connection:+");
         //trace!("polling Connection backtrace:\n{}", std::backtrace::Backtrace::force_capture());
 
         let pinned = self.get_mut();
